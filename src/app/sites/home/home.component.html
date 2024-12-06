@@ -1,0 +1,41 @@
+<div class="container">
+  <mat-card>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Titel</mat-label>
+      <input matInput [(ngModel)]="title" placeholder="Geben Sie hier einen Titel ein"/>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Text</mat-label>
+      <textarea
+        matInput
+        [(ngModel)]="text"
+        placeholder="Geben Sie hier einen Text ein"
+        rows="5"
+      ></textarea>
+    </mat-form-field>
+
+    <div class="button-row">
+      <button mat-raised-button color="accent" (click)="clickLoadFromDatabase()">Aus Datenbank laden</button>
+      <button mat-raised-button color="primary" (click)="clickSave()">Speichern</button>
+    </div>
+
+    <div class="analysis-section">
+      <h3>Analysekriterien</h3>
+      <div id="search-string">
+        <mat-checkbox [(ngModel)]="withSearchString">Suche Buchstabenfolge</mat-checkbox>
+        <mat-form-field appearance="outline" class="input-small">
+          <mat-label>Buchstabenfolge</mat-label>
+          <input matInput [(ngModel)]="searchString"/>
+        </mat-form-field>
+      </div>
+      <mat-checkbox [(ngModel)]="withShareOfSymbols">Anteil der Zeichen</mat-checkbox>
+      <mat-checkbox [(ngModel)]="withSameWordAtSentenceStart">Gleiches Wort bei Satzbeginn</mat-checkbox>
+    </div>
+
+
+    <button mat-raised-button color="primary" class="analyse-button" (click)="clickAnalyse()">
+      Analysieren
+    </button>
+  </mat-card>
+</div>

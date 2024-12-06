@@ -1,0 +1,51 @@
+.container {
+  margin: 50px 50px 50px 50%;
+  width: 70%;
+  transform: translateX(-50%);
+}
+
+mat-card {
+  padding: 20px;
+}
+
+.mat-toolbar {
+  margin-bottom: 20px;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.button-row {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.analysis-section {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-small {
+  width: 200px;
+  margin-bottom: 20px;
+}
+
+.analyse-button {
+  margin-top: 10px;
+  width: max-content;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+#search-string mat-checkbox {
+  margin-right: 20px;
+}
+
+#search-string mat-form-field {
+  height: 0;
+}
