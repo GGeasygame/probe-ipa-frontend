@@ -11,6 +11,18 @@ import {MatDialog} from '@angular/material/dialog';
 import {SelectTextDialogComponent} from '../../components/select-text-dialog/select-text-dialog.component';
 import {TextRequestDto} from '../../dto/TextRequestDto';
 import {AnalysisRequestDto} from '../../dto/AnalysisRequestDto';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {SearchStringAnalysisComponent} from '../../components/search-string-analysis/search-string-analysis.component';
+import {AnalysisWithSearchStringDto} from '../../dto/AnalysisWithSearchStringDto';
+import {AnalysisResponseDto} from '../../dto/AnalysisResponseDto';
+import {AnalysisWithSameWordAtSentence} from '../../dto/AnalysisWithSameWordAtSentenceStartDto';
+import {
+  SameWordAtSentenceStartAnalysisComponent
+} from '../../components/same-word-at-sentence-start-analysis/same-word-at-sentence-start-analysis.component';
+import {AnalysisWithShareOfSymbolsDto} from '../../dto/AnalysisWithShareOfSymbolsDto';
+import {
+  ShareOfSymbolsAnalysisComponent
+} from '../../components/share-of-symbols-analysis/share-of-symbols-analysis.component';
 
 @Component({
   selector: 'app-home',
@@ -22,6 +34,9 @@ import {AnalysisRequestDto} from '../../dto/AnalysisRequestDto';
     MatCheckboxModule,
     MatButtonModule,
     FormsModule,
+    SearchStringAnalysisComponent,
+    SameWordAtSentenceStartAnalysisComponent,
+    ShareOfSymbolsAnalysisComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
@@ -37,28 +52,35 @@ export class HomeComponent {
 
   texts: WritableSignal<Text[]> = signal([])
 
-  constructor(private apiService: ApiService, public dialog: MatDialog) {
+  analysisWithSearchString = signal<AnalysisWithSearchStringDto | undefined>(undefined)
+  analysisSameWordAtSentenceStart = signal<AnalysisWithSameWordAtSentence | undefined>(undefined)
+  analysisShareOfSymbols = signal<AnalysisWithShareOfSymbolsDto | undefined>(undefined)
+
+  constructor(private apiService: ApiService, public dialog: MatDialog, private snackBar: MatSnackBar) {
   }
 
   clickLoadFromDatabase() {
-    this.apiService.getTexts().subscribe(texts => {
-      this.texts.set(texts as Text[])
-      let dialog = this.dialog.open(SelectTextDialogComponent, {
-        width: '500px',
-        height: '500px',
-        data: {
-          texts: this.texts(),
-        }
-      });
+    this.apiService.getTexts().subscribe({
+      next: texts => {
+        this.texts.set(texts as Text[]);
+        let dialog = this.dialog.open(SelectTextDialogComponent, {
+          width: '500px',
+          height: '500px',
+          data: {
+            texts: this.texts(),
+          }
+        });
 
-      dialog.afterClosed().subscribe(selectedRow => {
-        if (selectedRow) {
-          this.id = selectedRow.id;
-          this.title = selectedRow.title;
-          this.text = selectedRow.text;
-        }
-      });
-    })
+        dialog.afterClosed().subscribe(selectedRow => {
+          if (selectedRow) {
+            this.id = selectedRow.id;
+            this.title = selectedRow.title;
+            this.text = selectedRow.text;
+          }
+        });
+      },
+      error: err => this.showError(err)
+    });
 
   }
 
@@ -67,15 +89,76 @@ export class HomeComponent {
       this.apiService.updateText(
         this.id,
         new TextRequestDto(this.title(), this.text())
-      )
+      ).subscribe({
+        next: () => {
+          this.snackBar.open('Text updated successfully!', 'Close', {duration: 3000});
+        },
+        error: err => this.showError(err)
+      });
     }
-    this.apiService.addText(new TextRequestDto(this.title(), this.text()))
+    this.apiService.addText(new TextRequestDto(this.title(), this.text())).subscribe({
+      next: () => {
+        this.snackBar.open('Text added successfully!', 'Close', {duration: 3000});
+      },
+      error: err => this.showError(err)
+    });
   }
 
   clickAnalyse() {
     if (this.withSearchString()) {
-      this.apiService.analyse(new AnalysisRequestDto(this.text(), this.searchString(), this.withShareOfSymbols(), this.withSameWordAtSentenceStart()))
+      this.apiService.analyse(
+        new AnalysisRequestDto(
+          this.text(),
+          this.searchString(),
+          this.withShareOfSymbols(),
+          this.withSameWordAtSentenceStart()))
+        .subscribe({
+          next: response => this.showAnalysis(response),
+          error: err => this.showError(err)
+        })
     }
-    this.apiService.analyse(new AnalysisRequestDto(this.text(), "", this.withShareOfSymbols(), this.withSameWordAtSentenceStart()))
+    this.apiService.analyse(
+      new AnalysisRequestDto(
+        this.text(),
+        "",
+        this.withShareOfSymbols(),
+        this.withSameWordAtSentenceStart()))
+      .subscribe({
+        next: response => this.showAnalysis(response),
+        error: err => this.showError(err)
+      })
+  }
+
+  private showError(err: any) {
+    if (err.name === 'TimeoutError') {
+      this.snackBar.open('Es gab ein Timeout.', 'Close', {
+        duration: 5000,
+        panelClass: ['error-snackbar'],
+      });
+    } else {
+      this.snackBar.open('Ein unbekannter Fehler trat auf.', 'Close', {
+        duration: 5000,
+        panelClass: ['error-snackbar'],
+      });
+    }
+  }
+
+  private showAnalysis(response: any) {
+    let analysisArray = response as AnalysisResponseDto[];
+    if (analysisArray.length === 0) {
+      return
+    }
+    analysisArray.forEach(analysis => {
+      if (analysis.hasOwnProperty('timesFound') && analysis.hasOwnProperty('highlightedTextHtml')) {
+        let analysisWithSearchString = analysis as any;
+        this.analysisWithSearchString.set(new AnalysisWithSearchStringDto(analysisWithSearchString['timesFound'], analysisWithSearchString['highlightedTextHtml']));
+      } else if (analysis.hasOwnProperty('highlightedTextHtml')) {
+        let analysisSameWordAtSentenceStart = analysis as any;
+        this.analysisSameWordAtSentenceStart.set(new AnalysisWithSameWordAtSentence(analysisSameWordAtSentenceStart['highlightedTextHtml']));
+      } else if (analysis.hasOwnProperty('shareOfSymbols')) {
+        let analysisShareOfSymbols = analysis as any;
+        this.analysisShareOfSymbols.set(new AnalysisWithShareOfSymbolsDto(new Map(Object.entries(analysisShareOfSymbols['shareOfSymbols']))));
+      }
+    })
   }
 }

@@ -49,3 +49,9 @@ mat-card {
 #search-string mat-form-field {
   height: 0;
 }
+
+
+.error-snackbar {
+  background-color: red;
+  color: white;
+}

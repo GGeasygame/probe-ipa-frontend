@@ -38,4 +38,23 @@
       Analysieren
     </button>
   </mat-card>
+
+
+  @if (analysisWithSearchString()) {
+    <mat-card>
+      <app-search-string-analysis [analysis]="analysisWithSearchString()!"></app-search-string-analysis>
+    </mat-card>
+  }
+  @if (analysisSameWordAtSentenceStart()) {
+    <mat-card>
+      <app-same-word-at-sentence-start-analysis
+        [analysis]="analysisSameWordAtSentenceStart()!"></app-same-word-at-sentence-start-analysis>
+    </mat-card>
+  }
+  @if (analysisShareOfSymbols()) {
+    <mat-card>
+      <app-share-of-symbols-analysis
+        [analysis]="analysisShareOfSymbols()!"></app-share-of-symbols-analysis>
+    </mat-card>
+  }
 </div>
