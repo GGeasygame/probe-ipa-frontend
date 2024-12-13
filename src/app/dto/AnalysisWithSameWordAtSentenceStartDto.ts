@@ -1,6 +1,6 @@
 import {AnalysisResponseDto} from './AnalysisResponseDto';
 
-export class AnalysisWithSameWordAtSentence implements AnalysisResponseDto {
+export class AnalysisWithSameWordAtSentenceDto implements AnalysisResponseDto {
   highlightedTextHtml: string;
 
   constructor(highlightedTextHtml: string) {

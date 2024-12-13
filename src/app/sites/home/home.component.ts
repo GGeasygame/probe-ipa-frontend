@@ -15,7 +15,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {SearchStringAnalysisComponent} from '../../components/search-string-analysis/search-string-analysis.component';
 import {AnalysisWithSearchStringDto} from '../../dto/AnalysisWithSearchStringDto';
 import {AnalysisResponseDto} from '../../dto/AnalysisResponseDto';
-import {AnalysisWithSameWordAtSentence} from '../../dto/AnalysisWithSameWordAtSentenceStartDto';
+import {AnalysisWithSameWordAtSentenceDto} from '../../dto/AnalysisWithSameWordAtSentenceStartDto';
 import {
   SameWordAtSentenceStartAnalysisComponent
 } from '../../components/same-word-at-sentence-start-analysis/same-word-at-sentence-start-analysis.component';
@@ -53,7 +53,7 @@ export class HomeComponent {
   texts: WritableSignal<Text[]> = signal([])
 
   analysisWithSearchString = signal<AnalysisWithSearchStringDto | undefined>(undefined)
-  analysisSameWordAtSentenceStart = signal<AnalysisWithSameWordAtSentence | undefined>(undefined)
+  analysisSameWordAtSentenceStart = signal<AnalysisWithSameWordAtSentenceDto | undefined>(undefined)
   analysisShareOfSymbols = signal<AnalysisWithShareOfSymbolsDto | undefined>(undefined)
 
   constructor(private apiService: ApiService, public dialog: MatDialog, private snackBar: MatSnackBar) {
@@ -74,8 +74,8 @@ export class HomeComponent {
         dialog.afterClosed().subscribe(selectedRow => {
           if (selectedRow) {
             this.id = selectedRow.id;
-            this.title = selectedRow.title;
-            this.text = selectedRow.text;
+            this.title.set(selectedRow.title);
+            this.text.set(selectedRow.text);
           }
         });
       },
@@ -154,7 +154,7 @@ export class HomeComponent {
         this.analysisWithSearchString.set(new AnalysisWithSearchStringDto(analysisWithSearchString['timesFound'], analysisWithSearchString['highlightedTextHtml']));
       } else if (analysis.hasOwnProperty('highlightedTextHtml')) {
         let analysisSameWordAtSentenceStart = analysis as any;
-        this.analysisSameWordAtSentenceStart.set(new AnalysisWithSameWordAtSentence(analysisSameWordAtSentenceStart['highlightedTextHtml']));
+        this.analysisSameWordAtSentenceStart.set(new AnalysisWithSameWordAtSentenceDto(analysisSameWordAtSentenceStart['highlightedTextHtml']));
       } else if (analysis.hasOwnProperty('shareOfSymbols')) {
         let analysisShareOfSymbols = analysis as any;
         this.analysisShareOfSymbols.set(new AnalysisWithShareOfSymbolsDto(new Map(Object.entries(analysisShareOfSymbols['shareOfSymbols']))));

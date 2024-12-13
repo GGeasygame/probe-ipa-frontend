@@ -9,6 +9,7 @@ import {
   MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef,
   MatTable
 } from '@angular/material/table';
+import {DecimalPipe} from '@angular/common';
 
 @Component({
   selector: 'app-share-of-symbols-analysis',
@@ -22,7 +23,8 @@ import {
     MatHeaderRow,
     MatRow,
     MatHeaderRowDef,
-    MatRowDef
+    MatRowDef,
+    DecimalPipe
   ],
   templateUrl: './share-of-symbols-analysis.component.html',
   styleUrl: './share-of-symbols-analysis.component.css'
@@ -31,8 +33,8 @@ export class ShareOfSymbolsAnalysisComponent {
   analysis = input.required<AnalysisWithShareOfSymbolsDto>()
 
   shares = computed(() => {
-    return Array.from(this.analysis().shareOfSymbols.entries())
-  })
+    return Array.from(this.analysis().shareOfSymbols.entries()).sort((a, b) => b[1] - a[1]);
+  });
 
   displayedColumns: string[] = ['symbol', 'shareOfSymbols'];
 

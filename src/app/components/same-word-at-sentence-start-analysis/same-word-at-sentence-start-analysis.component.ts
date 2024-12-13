@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, input} from '@angular/core';
-import {AnalysisWithSameWordAtSentence} from '../../dto/AnalysisWithSameWordAtSentenceStartDto';
+import {AnalysisWithSameWordAtSentenceDto} from '../../dto/AnalysisWithSameWordAtSentenceStartDto';
 
 @Component({
   selector: 'app-same-word-at-sentence-start-analysis',
@@ -8,7 +8,7 @@ import {AnalysisWithSameWordAtSentence} from '../../dto/AnalysisWithSameWordAtSe
   styleUrl: './same-word-at-sentence-start-analysis.component.css'
 })
 export class SameWordAtSentenceStartAnalysisComponent implements AfterViewInit {
-  analysis = input.required<AnalysisWithSameWordAtSentence>()
+  analysis = input.required<AnalysisWithSameWordAtSentenceDto>()
 
   ngAfterViewInit() {
     const spans = document.querySelectorAll('.text span') as NodeListOf<HTMLSpanElement>;
